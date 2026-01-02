@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import ChatInterface from './components/ChatInterface';
+import ResumeBuilder from './components/ResumeBuilder';
 import { api } from './api';
 import './App.css';
 
 function App() {
+  const [mode, setMode] = useState('chat');
   const [conversations, setConversations] = useState([]);
   const [currentConversationId, setCurrentConversationId] = useState(null);
   const [currentConversation, setCurrentConversation] = useState(null);
@@ -183,17 +185,43 @@ function App() {
 
   return (
     <div className="app">
-      <Sidebar
-        conversations={conversations}
-        currentConversationId={currentConversationId}
-        onSelectConversation={handleSelectConversation}
-        onNewConversation={handleNewConversation}
-      />
-      <ChatInterface
-        conversation={currentConversation}
-        onSendMessage={handleSendMessage}
-        isLoading={isLoading}
-      />
+      <div className="topbar">
+        <div className="brand">LLM Council</div>
+        <div className="mode-switch">
+          <button
+            className={`mode-button ${mode === 'chat' ? 'active' : ''}`}
+            onClick={() => setMode('chat')}
+          >
+            Chat
+          </button>
+          <button
+            className={`mode-button ${mode === 'resume' ? 'active' : ''}`}
+            onClick={() => setMode('resume')}
+          >
+            Resume
+          </button>
+        </div>
+      </div>
+
+      <div className={`body ${mode === 'resume' ? 'body-resume' : ''}`}>
+        {mode === 'chat' ? (
+          <>
+            <Sidebar
+              conversations={conversations}
+              currentConversationId={currentConversationId}
+              onSelectConversation={handleSelectConversation}
+              onNewConversation={handleNewConversation}
+            />
+            <ChatInterface
+              conversation={currentConversation}
+              onSendMessage={handleSendMessage}
+              isLoading={isLoading}
+            />
+          </>
+        ) : (
+          <ResumeBuilder />
+        )}
+      </div>
     </div>
   );
 }
