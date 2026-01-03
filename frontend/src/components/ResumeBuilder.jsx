@@ -146,7 +146,6 @@ export default function ResumeBuilder() {
   return (
     <div className="resume-builder">
       <section className="resume-hero card fade-in">
-        <span className="badge badge-accent">Resume Council</span>
         <h1>Role-ready resumes, without the busywork.</h1>
         <p>
           Drop in a job description and your master profile. The council drafts,

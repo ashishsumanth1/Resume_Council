@@ -18,6 +18,9 @@
   background: hsl(var(--card) / 0.85);
   border-bottom: 1px solid hsl(var(--border) / 0.6);
   backdrop-filter: blur(18px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .brand {
@@ -54,6 +57,29 @@
 .brand-subtitle {
   font-size: 12px;
   color: hsl(var(--muted-foreground));
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme-toggle {
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--muted));
+  color: hsl(var(--foreground));
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background: hsl(var(--background));
+  transform: translateY(-1px);
 }
 
 .body {
