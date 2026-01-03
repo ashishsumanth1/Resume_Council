@@ -145,9 +145,20 @@ export default function ResumeBuilder() {
 
   return (
     <div className="resume-builder">
+      <section className="resume-hero card fade-in">
+        <span className="badge badge-accent">Resume Council</span>
+        <h1>Role-ready resumes, without the busywork.</h1>
+        <p>
+          Drop in a job description and your master profile. The council drafts,
+          ranks, and refines a tailored resume you can export as DOCX.
+        </p>
+      </section>
       <div className="resume-layout">
-        <div className="resume-history">
-          <div className="resume-history-header">History</div>
+        <div className="resume-history card">
+          <div className="resume-history-header">
+            <span>History</span>
+            <span className="badge">Saved runs</span>
+          </div>
           {history.length === 0 ? (
             <div className="resume-history-empty">No resume runs yet</div>
           ) : (
@@ -166,88 +177,91 @@ export default function ResumeBuilder() {
         </div>
 
         <div className="resume-main">
-          <div className="resume-form-card">
-        <div className="form-header">
-          <div>
-            <h2>Resume Council</h2>
-            <p>Paste your job description, master profile, and company context. The council will tailor and rank resumes, then the chairman produces the final.</p>
-          </div>
-        </div>
-
-        {error && <div className="error-banner">{error}</div>}
-
-        <form className="resume-form" onSubmit={handleSubmit}>
-          <label>
-            Peer Ranking (expensive, higher confidence)
-            <div className="toggle-row">
-              <input
-                type="checkbox"
-                checked={usePeerRanking}
-                onChange={(e) => setUsePeerRanking(e.target.checked)}
-                disabled={isLoading}
-              />
-              <span>{usePeerRanking ? 'On' : 'Off'}</span>
+          <div className="resume-form-card card">
+            <div className="form-header">
+              <div>
+                <h2>Start a run</h2>
+                <p>
+                  Paste the role description and your master profile. You can
+                  save profiles and reuse them across runs.
+                </p>
+              </div>
             </div>
-          </label>
 
-          <label>
-            Job Description (paste text)
-            <textarea
-              value={jobDescription}
-              onChange={(e) => setJobDescription(e.target.value)}
-              placeholder="Paste the JD here"
-              rows={8}
-              required
-            />
-          </label>
+            {error && <div className="error-banner">{error}</div>}
 
-          <label>
-            Master Profile (truth source)
-            <div className="profile-row">
-              <select
-                className="profile-select"
-                value={selectedProfileId}
-                onChange={(e) => handleSelectProfile(e.target.value)}
-                disabled={isLoading}
-              >
-                <option value="">(not saved)</option>
-                {profiles.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name || 'Master Profile'}
-                  </option>
-                ))}
-              </select>
-              <button
-                className="save-profile-button"
-                type="button"
-                onClick={handleSaveProfile}
-                disabled={isLoading}
-              >
-                Save
+            <form className="resume-form" onSubmit={handleSubmit}>
+              <label>
+                Peer Ranking (expensive, higher confidence)
+                <div className="toggle-row">
+                  <input
+                    type="checkbox"
+                    checked={usePeerRanking}
+                    onChange={(e) => setUsePeerRanking(e.target.checked)}
+                    disabled={isLoading}
+                  />
+                  <span>{usePeerRanking ? 'On' : 'Off'}</span>
+                </div>
+              </label>
+
+              <label>
+                Job Description (paste text)
+                <textarea
+                  value={jobDescription}
+                  onChange={(e) => setJobDescription(e.target.value)}
+                  placeholder="Paste the JD here"
+                  rows={8}
+                  required
+                />
+              </label>
+
+              <label>
+                Master Profile (truth source)
+                <div className="profile-row">
+                  <select
+                    className="profile-select"
+                    value={selectedProfileId}
+                    onChange={(e) => handleSelectProfile(e.target.value)}
+                    disabled={isLoading}
+                  >
+                    <option value="">(not saved)</option>
+                    {profiles.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name || 'Master Profile'}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    className="save-profile-button"
+                    type="button"
+                    onClick={handleSaveProfile}
+                    disabled={isLoading}
+                  >
+                    Save
+                  </button>
+                </div>
+                <textarea
+                  value={masterProfile}
+                  onChange={(e) => setMasterProfile(e.target.value)}
+                  placeholder="Paste your master resume/profile"
+                  rows={8}
+                />
+              </label>
+
+              <label>
+                Company Details (optional)
+                <textarea
+                  value={companyDetails}
+                  onChange={(e) => setCompanyDetails(e.target.value)}
+                  placeholder="Any notes on company culture, values, products"
+                  rows={4}
+                />
+              </label>
+
+              <button type="submit" className="run-button" disabled={isLoading}>
+                {isLoading ? 'Working…' : 'Run Council'}
               </button>
-            </div>
-            <textarea
-              value={masterProfile}
-              onChange={(e) => setMasterProfile(e.target.value)}
-              placeholder="Paste your master resume/profile"
-              rows={8}
-            />
-          </label>
-
-          <label>
-            Company Details (optional)
-            <textarea
-              value={companyDetails}
-              onChange={(e) => setCompanyDetails(e.target.value)}
-              placeholder="Any notes on company culture, values, products"
-              rows={4}
-            />
-          </label>
-
-          <button type="submit" className="run-button" disabled={isLoading}>
-            {isLoading ? 'Working…' : 'Run Council'}
-          </button>
-        </form>
+            </form>
           </div>
 
       {isLoading && (
