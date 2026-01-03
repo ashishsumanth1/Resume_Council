@@ -4,12 +4,12 @@
 
 const RAW_API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8001';
 const API_BASE = RAW_API_BASE.replace(/\/$/, '');
-const AUTH_STORAGE_KEY = 'resume_council_auth';
+const AUTH_STORAGE_KEY = 'resume_council_token';
 
 const getAuthHeaders = () => {
   if (typeof window === 'undefined') return {};
   const token = window.localStorage.getItem(AUTH_STORAGE_KEY);
-  return token ? { Authorization: `Basic ${token}` } : {};
+  return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
 const withAuth = (headers = {}) => ({
@@ -22,9 +22,8 @@ export const auth = {
     if (typeof window === 'undefined') return false;
     return Boolean(window.localStorage.getItem(AUTH_STORAGE_KEY));
   },
-  set(email, password) {
+  set(token) {
     if (typeof window === 'undefined') return null;
-    const token = window.btoa(`${email}:${password}`);
     window.localStorage.setItem(AUTH_STORAGE_KEY, token);
     return token;
   },
@@ -35,6 +34,19 @@ export const auth = {
 };
 
 export const api = {
+  async login({ email, password, totp }) {
+    const response = await fetch(`${API_BASE}/api/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password, totp }),
+    });
+    if (!response.ok) {
+      throw new Error('Invalid email or password.');
+    }
+    return response.json();
+  },
   /**
    * Run resume tailoring council flow.
    */

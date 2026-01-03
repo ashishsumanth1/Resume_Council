@@ -20,7 +20,7 @@ function App() {
   const [authStatus, setAuthStatus] = useState(() => (auth.has() ? 'checking' : 'idle'));
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
-  const [credentials, setCredentials] = useState({ email: '', password: '' });
+  const [credentials, setCredentials] = useState({ email: '', password: '', totp: '' });
 
   useEffect(() => {
     if (!auth.has()) return;
@@ -42,9 +42,9 @@ function App() {
     event.preventDefault();
     setAuthError('');
     setAuthLoading(true);
-    auth.set(credentials.email, credentials.password);
     try {
-      await api.listProfiles();
+      const data = await api.login(credentials);
+      auth.set(data.token);
       setIsAuthed(true);
       setAuthStatus('authed');
     } catch (err) {
@@ -123,6 +123,20 @@ function App() {
                     setCredentials((prev) => ({ ...prev, password: event.target.value }))
                   }
                   placeholder="••••••••"
+                />
+              </label>
+              <label className="auth-field">
+                Authenticator code
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  required
+                  value={credentials.totp}
+                  onChange={(event) =>
+                    setCredentials((prev) => ({ ...prev, totp: event.target.value }))
+                  }
+                  placeholder="123456"
                 />
               </label>
               {authError && <div className="auth-error">{authError}</div>}

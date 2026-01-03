@@ -16,6 +16,8 @@ Environment variables (Backend):
 - `OPENROUTER_API_KEY` = your OpenRouter key
 - `APP_AUTH_EMAIL` = allowed email
 - `APP_AUTH_PASSWORD` = allowed password
+- `APP_AUTH_TOTP_SECRET` = base32 secret for Google Authenticator
+- `APP_AUTH_TOKEN_SECRET` = secret for signing session tokens (optional; defaults to password)
 - `CORS_ORIGINS` = frontend URL (comma-separated if multiple), e.g.
   - `https://your-frontend.railway.app`
 
