@@ -19,7 +19,7 @@
   height: 56px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding: 0 16px;
   border-bottom: 1px solid #e5e7eb;
   background: #fdfdfd;
@@ -28,26 +28,6 @@
 .brand {
   font-weight: 700;
   font-size: 16px;
-}
-
-.mode-switch {
-  display: flex;
-  gap: 8px;
-}
-
-.mode-button {
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  background: #fff;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.mode-button.active {
-  background: #2563eb;
-  color: #fff;
-  border-color: #2563eb;
 }
 
 .body {
