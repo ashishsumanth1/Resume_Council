@@ -4,6 +4,35 @@
 
 const RAW_API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8001';
 const API_BASE = RAW_API_BASE.replace(/\/$/, '');
+const AUTH_STORAGE_KEY = 'resume_council_auth';
+
+const getAuthHeaders = () => {
+  if (typeof window === 'undefined') return {};
+  const token = window.localStorage.getItem(AUTH_STORAGE_KEY);
+  return token ? { Authorization: `Basic ${token}` } : {};
+};
+
+const withAuth = (headers = {}) => ({
+  ...headers,
+  ...getAuthHeaders(),
+});
+
+export const auth = {
+  has() {
+    if (typeof window === 'undefined') return false;
+    return Boolean(window.localStorage.getItem(AUTH_STORAGE_KEY));
+  },
+  set(email, password) {
+    if (typeof window === 'undefined') return null;
+    const token = window.btoa(`${email}:${password}`);
+    window.localStorage.setItem(AUTH_STORAGE_KEY, token);
+    return token;
+  },
+  clear() {
+    if (typeof window === 'undefined') return;
+    window.localStorage.removeItem(AUTH_STORAGE_KEY);
+  },
+};
 
 export const api = {
   /**
@@ -14,6 +43,7 @@ export const api = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...getAuthHeaders(),
       },
       body: JSON.stringify({
         job_description: jobDescription,
@@ -33,7 +63,9 @@ export const api = {
   },
 
   async listResumeRuns() {
-    const response = await fetch(`${API_BASE}/api/resumes`);
+    const response = await fetch(`${API_BASE}/api/resumes`, {
+      headers: withAuth(),
+    });
     if (!response.ok) {
       throw new Error('Failed to list resume runs');
     }
@@ -41,7 +73,9 @@ export const api = {
   },
 
   async getResumeRun(resumeId) {
-    const response = await fetch(`${API_BASE}/api/resumes/${resumeId}`);
+    const response = await fetch(`${API_BASE}/api/resumes/${resumeId}`, {
+      headers: withAuth(),
+    });
     if (!response.ok) {
       throw new Error('Failed to get resume run');
     }
@@ -49,7 +83,9 @@ export const api = {
   },
 
   async listProfiles() {
-    const response = await fetch(`${API_BASE}/api/profiles`);
+    const response = await fetch(`${API_BASE}/api/profiles`, {
+      headers: withAuth(),
+    });
     if (!response.ok) {
       throw new Error('Failed to list profiles');
     }
@@ -61,6 +97,7 @@ export const api = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...getAuthHeaders(),
       },
       body: JSON.stringify({ name, raw_text: rawText }),
     });
@@ -72,7 +109,9 @@ export const api = {
   },
 
   async getProfile(profileId) {
-    const response = await fetch(`${API_BASE}/api/profiles/${profileId}`);
+    const response = await fetch(`${API_BASE}/api/profiles/${profileId}`, {
+      headers: withAuth(),
+    });
     if (!response.ok) {
       throw new Error('Failed to get profile');
     }

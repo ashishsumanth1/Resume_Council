@@ -14,6 +14,8 @@ Create a new Railway service from this repo.
 
 Environment variables (Backend):
 - `OPENROUTER_API_KEY` = your OpenRouter key
+- `APP_AUTH_EMAIL` = allowed email
+- `APP_AUTH_PASSWORD` = allowed password
 - `CORS_ORIGINS` = frontend URL (comma-separated if multiple), e.g.
   - `https://your-frontend.railway.app`
 

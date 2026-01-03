@@ -1,10 +1,12 @@
 """FastAPI backend for Resume Council."""
 
 import os
+import secrets
 import uuid
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel
 
 from . import resume_storage
@@ -12,7 +14,28 @@ from . import profile_storage
 from .packs import build_profile_pack
 from .resume import run_resume_council
 
-app = FastAPI(title="Resume Council API")
+_security = HTTPBasic()
+
+
+def _require_basic_auth(credentials: HTTPBasicCredentials = Depends(_security)) -> None:
+    expected_email = (os.getenv("APP_AUTH_EMAIL") or "").strip()
+    expected_password = (os.getenv("APP_AUTH_PASSWORD") or "").strip()
+
+    if not expected_email or not expected_password:
+        raise HTTPException(status_code=500, detail="Auth not configured")
+
+    is_valid = secrets.compare_digest(credentials.username, expected_email) and secrets.compare_digest(
+        credentials.password, expected_password
+    )
+    if not is_valid:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorized",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+
+
+app = FastAPI(title="Resume Council API", dependencies=[Depends(_require_basic_auth)])
 
 
 def _cors_origins() -> list[str]:

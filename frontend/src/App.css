@@ -65,6 +65,23 @@
   gap: 8px;
 }
 
+.ghost-button {
+  border: 1px solid hsl(var(--border));
+  background: transparent;
+  color: hsl(var(--foreground));
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.ghost-button:hover {
+  background: hsl(var(--muted));
+  transform: translateY(-1px);
+}
+
 .theme-toggle {
   border: 1px solid hsl(var(--border));
   background: hsl(var(--muted));
@@ -89,6 +106,62 @@
 
 .body-resume {
   background: transparent;
+}
+
+.auth-shell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+}
+
+.auth-card {
+  width: min(480px, 100%);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.auth-card h1 {
+  font-size: 26px;
+  letter-spacing: -0.02em;
+}
+
+.auth-card p {
+  color: hsl(var(--muted-foreground));
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.auth-field input {
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  padding: 12px;
+  background: hsl(var(--muted));
+}
+
+.auth-error {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: hsl(0 80% 95%);
+  border: 1px solid hsl(0 70% 85%);
+  color: hsl(0 60% 40%);
+  font-size: 13px;
 }
 
 @media (max-width: 640px) {

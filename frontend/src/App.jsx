@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ResumeBuilder from './components/ResumeBuilder';
+import { api, auth } from './api';
 import './App.css';
 
 function App() {
@@ -15,6 +16,58 @@ function App() {
     localStorage.setItem('theme', dark ? 'dark' : 'light');
   }, [dark]);
 
+  const [isAuthed, setIsAuthed] = useState(() => auth.has());
+  const [authStatus, setAuthStatus] = useState(() => (auth.has() ? 'checking' : 'idle'));
+  const [authError, setAuthError] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
+
+  useEffect(() => {
+    if (!auth.has()) return;
+    setAuthStatus('checking');
+    api
+      .listProfiles()
+      .then(() => {
+        setIsAuthed(true);
+        setAuthStatus('authed');
+      })
+      .catch(() => {
+        auth.clear();
+        setIsAuthed(false);
+        setAuthStatus('idle');
+      });
+  }, []);
+
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    setAuthError('');
+    setAuthLoading(true);
+    auth.set(credentials.email, credentials.password);
+    try {
+      await api.listProfiles();
+      setIsAuthed(true);
+      setAuthStatus('authed');
+    } catch (err) {
+      auth.clear();
+      setIsAuthed(false);
+      setAuthStatus('idle');
+      setAuthError('Invalid email or password.');
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    auth.clear();
+    setCredentials({ email: '', password: '' });
+    setIsAuthed(false);
+    setAuthStatus('idle');
+  };
+
+  const heroDescription = useMemo(() => {
+    return 'Private access. Sign in to generate role-ready resumes with the council.';
+  }, []);
+
   return (
     <div className="app">
       <div className="topbar">
@@ -26,6 +79,11 @@ function App() {
           </div>
         </div>
         <div className="topbar-actions">
+          {isAuthed && authStatus === 'authed' && (
+            <button className="ghost-button" type="button" onClick={handleLogout}>
+              Sign out
+            </button>
+          )}
           <button
             className="theme-toggle"
             type="button"
@@ -36,9 +94,49 @@ function App() {
         </div>
       </div>
 
-      <div className="body body-resume">
-        <ResumeBuilder />
-      </div>
+      {!isAuthed || authStatus !== 'authed' ? (
+        <div className="auth-shell">
+          <div className="auth-card card">
+            <span className="badge badge-accent">Private Access</span>
+            <h1>Resume Council</h1>
+            <p>{heroDescription}</p>
+            <form className="auth-form" onSubmit={handleLogin}>
+              <label className="auth-field">
+                Email
+                <input
+                  type="email"
+                  required
+                  value={credentials.email}
+                  onChange={(event) =>
+                    setCredentials((prev) => ({ ...prev, email: event.target.value }))
+                  }
+                  placeholder="you@domain.com"
+                />
+              </label>
+              <label className="auth-field">
+                Password
+                <input
+                  type="password"
+                  required
+                  value={credentials.password}
+                  onChange={(event) =>
+                    setCredentials((prev) => ({ ...prev, password: event.target.value }))
+                  }
+                  placeholder="••••••••"
+                />
+              </label>
+              {authError && <div className="auth-error">{authError}</div>}
+              <button className="run-button" type="submit" disabled={authLoading}>
+                {authLoading ? 'Checking…' : 'Continue'}
+              </button>
+            </form>
+          </div>
+        </div>
+      ) : (
+        <div className="body body-resume">
+          <ResumeBuilder />
+        </div>
+      )}
     </div>
   );
 }
