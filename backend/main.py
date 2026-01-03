@@ -24,9 +24,12 @@ def _require_basic_auth(credentials: HTTPBasicCredentials = Depends(_security)) 
     if not expected_email or not expected_password:
         raise HTTPException(status_code=500, detail="Auth not configured")
 
-    is_valid = secrets.compare_digest(credentials.username, expected_email) and secrets.compare_digest(
-        credentials.password, expected_password
-    )
+    provided_email = (credentials.username or "").strip()
+    provided_password = credentials.password or ""
+
+    email_match = secrets.compare_digest(provided_email.lower(), expected_email.lower())
+    password_match = secrets.compare_digest(provided_password, expected_password)
+    is_valid = email_match and password_match
     if not is_valid:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
